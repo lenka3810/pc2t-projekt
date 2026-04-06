@@ -1,6 +1,11 @@
 
 public enum UrovenSpoluprace {
-	zla,
-	priemerna,
-	dobra
+	DOBRA,
+	PRIEMERNA,
+	ZLA;
+	
+	@Override
+	public String toString() {
+		return name().toLowerCase();
+	}
 }

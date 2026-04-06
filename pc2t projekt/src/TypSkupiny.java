@@ -1,5 +1,5 @@
 
 public enum TypSkupiny {
-	analytik,
-	bezpecnost
+	ANALYTIK,
+	BEZPECNOST
 }
