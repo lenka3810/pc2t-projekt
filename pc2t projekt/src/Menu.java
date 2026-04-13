@@ -132,7 +132,16 @@ public class Menu {
 	}
 	
 	public void pouzitZrucnostZamestnanca() {
-		
+		 System.out.println("Zadajte ID zamestnanca:");
+		    int id = nacitajCislo();
+
+		    Zamestnanec z = db.najdiZamestnancaPodlaId(id);
+		    if (z == null) {
+		        System.out.println("Zamestnanec s danym ID neexistuje.");
+		        return;
+		    }
+		    
+		    z.pouzitZrucnost();
 	}
 	
 	public void vypisPodlaSkupinAPriezviska() {
