@@ -1,3 +1,6 @@
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.PrintWriter;
 import java.util.*;
 
 public class Menu {
@@ -51,6 +54,7 @@ public class Menu {
 	    int volba = 0;
 	    UrovenSpoluprace urovenSpoluprace = null;
 
+	    
 	    System.out.println("Zadajte ID zamestnanca:");
 	    int id1 = nacitajCislo();
 
@@ -132,16 +136,8 @@ public class Menu {
 	}
 	
 	public void pouzitZrucnostZamestnanca() {
-		 System.out.println("Zadajte ID zamestnanca:");
-		    int id = nacitajCislo();
-
-		    Zamestnanec z = db.najdiZamestnancaPodlaId(id);
-		    if (z == null) {
-		        System.out.println("Zamestnanec s danym ID neexistuje.");
-		        return;
-		    }
-		    
-		    z.pouzitZrucnost();
+		Zamestnanec z = nacitajZamestnanca("Zadajte ID zamestnanca: ");
+	    z.pouzitZrucnost();
 	}
 	
 	public void vypisPodlaSkupinAPriezviska() {
@@ -155,9 +151,6 @@ public class Menu {
 	public void pocetZamestnancovVSkupinach() {
 		db.vypisPoctyVSkupinach();
 		}
-	
-	public void ulozenieDoSuboru() {}
-	public void nacitanieZoSuboru() {}
 	
 	public void ulozenieDoSQL() {}
 	public void nacitanieZSQL() {}	
@@ -186,5 +179,19 @@ public class Menu {
 			System.out.println("Zadajte len pismena.");
 		}
 	}
+	
+	private Zamestnanec nacitajZamestnanca(String sprava) {
+	    System.out.println(sprava);
+	    int id = nacitajCislo();
+	    
+	    Zamestnanec z = db.najdiZamestnancaPodlaId(id);
+	    if (z == null) {
+	        System.out.println("Zamestnanec s danym ID neexistuje.");
+	    }
+	    return z;
+	}
 }
+
+
+
 
