@@ -1,3 +1,4 @@
+import java.io.*;
 import java.util.*;
 
 public class Databaza {
@@ -104,8 +105,65 @@ public class Databaza {
     	
     	System.out.println("Prevazujuca kvalita spoluprace: "+prevazujuca);
     }
+    
+    public void ulozenieDoSuboru(String nazovSuboru) {
+		try (PrintWriter pw = new PrintWriter(new FileWriter(nazovSuboru))) {		
+			for (Zamestnanec z : zamestnanci) {
+				pw.println(z.getTypSkupiny());
+				pw.println(z.getMeno());
+				pw.println(z.getPriezvisko());
+				pw.println(z.getRokNarodenia());
+			}
+			
+			pw.println("SPOLUPRACE");
+			for (Zamestnanec z : zamestnanci) {
+				for(Map.Entry<Zamestnanec, UrovenSpoluprace> entry : z.getSpoluprace().entrySet()) {
+					if (z.getId() < entry.getKey().getId()) {
+						pw.println(z.getId()+":"+entry.getKey().getId()+":"+entry.getValue());
+					}
+				}
+			}
+			System.out.println("Databaza ulozena do suboru: "+nazovSuboru);
+			
+		} catch (IOException e) {
+			System.out.println("Chyba pri ukladani: "+ e.getMessage());
+		}
+	}
+	public void nacitanieZoSuboru(String nazovSuboru) {
+	    try (Scanner fileSc = new Scanner(new File(nazovSuboru))) {
+	    	while (fileSc.hasNextLine()) {
+	    		String riadok = fileSc.nextLine().trim();
+	    		
+	    		if (riadok.equals("SPOLUPRACE")) break;
+	    		if(riadok.equals("--------")) continue;
+	    		
+	    		TypSkupiny typ = TypSkupiny.valueOf(riadok);
+	    		String meno = fileSc.nextLine().trim();
+	    		String priezvisko = fileSc.nextLine().trim();
+	    		int rok = Integer.parseInt(fileSc.nextLine().trim());
+	    		
+	    		Zamestnanec z = switch(typ) {
+	    			case ANALYTIK -> new DataAnalitik(meno, priezvisko, rok);
+	    			case BEZPECNOST -> new BezpecnostnySpecialista(meno, priezvisko, rok);
+	    		};
+	    		pridajZamestnanca(z);
+	    	}
+	    	
+	    	while(fileSc.hasNextLine()) {
+	    		String[] cast = fileSc.nextLine().trim().split(":");
+	    		int id1 = Integer.parseInt(cast[0]);
+	    		int id2 = Integer.parseInt(cast[1]);
+	    		UrovenSpoluprace uroven = UrovenSpoluprace.valueOf(cast[2].toUpperCase());
+	    		pridajSpolupracu(id1, id2, uroven);
+	    	}
+			System.out.println("Databaza nacitana zo suboru: "+nazovSuboru);
+		} catch (IOException e) {
+			System.out.println("Subor neexistuje, pokracujem bez nacitania.");
+		} catch (Exception e) {
+			System.out.println("Chyba pri nacitani: "+e.getMessage());
+		}
+	}
 }
-
 
 
 
