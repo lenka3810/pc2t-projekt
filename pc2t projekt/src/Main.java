@@ -3,6 +3,7 @@ import java.util.*;
 public class Main {
 
 	public static void main(String[] args) {
+		final String NAZOV_SUBORU = "databaza.txt";
 		Scanner sc = new Scanner(System.in);
 		Databaza db = new Databaza();
 		Menu menu = new Menu(sc, db);
@@ -36,8 +37,8 @@ public class Main {
 			case 6 -> menu.vypisPodlaSkupinAPriezviska();
 			case 7 -> menu.statistiky();
 			case 8 -> menu.pocetZamestnancovVSkupinach();
-			case 9 -> menu.ulozenieDoSuboru();
-			case 10 -> menu.nacitanieZoSuboru();
+			case 9 -> db.ulozenieDoSuboru(NAZOV_SUBORU);
+			case 10 -> db.nacitanieZoSuboru(NAZOV_SUBORU);
 			case 0 -> { menu.ulozenieDoSQL(); System.out.println("Koniec programu."); return; }
 			default -> System.out.println("Neplatna volba."); }
 		}
