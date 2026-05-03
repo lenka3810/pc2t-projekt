@@ -15,6 +15,7 @@ public class DataAnalitik extends Zamestnanec
 	public void pouzitZrucnost() {
 			if(spoluprace.isEmpty()) {
 				System.out.println(this+" nema ziadnych spolupracovnikov.");
+				return;
 			}
 			
 			Zamestnanec najlepsi = null;
