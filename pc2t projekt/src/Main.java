@@ -39,7 +39,7 @@ public class Main {
 			case 8 -> menu.pocetZamestnancovVSkupinach();
 			case 9 -> db.ulozenieDoSuboru(NAZOV_SUBORU);
 			case 10 -> db.nacitanieZoSuboru(NAZOV_SUBORU);
-			case 0 -> { menu.ulozenieDoSQL(); System.out.println("Koniec programu."); return; }
+			case 0 -> { menu.ulozenieDoSQL(); db.zavriSpojenie(); System.out.println("Koniec programu."); return; }
 			default -> System.out.println("Neplatna volba."); }
 		}
 

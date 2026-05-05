@@ -40,13 +40,22 @@ public class Menu {
 		String priezvisko = nacitajString();
 				
 		System.out.println("Rok narodenia:");
-		int rok = nacitajCislo();
+		int rok;
+		while (true) {
+		    rok = nacitajCislo();
+		    int aktualnyRok = java.time.Year.now().getValue();
+		    
+		    if (rok >= 1900 && rok <= aktualnyRok) {
+		        break;
+		    }
+		    System.out.println("Zadajte platny rok narodenia.");
+		}
 		
 		switch(skupina) {
 		case 1 -> { DataAnalitik da = new DataAnalitik(meno, priezvisko, rok); 
 			db.pridajZamestnanca(da); System.out.println("Pridany zamestnanec: "+da); }
 		case 2 -> { BezpecnostnySpecialista bs = new BezpecnostnySpecialista(meno, priezvisko, rok); 
-			db.pridajZamestnanca(bs); System.out.println("Pridany zamestnanec:"+bs); }
+			db.pridajZamestnanca(bs); System.out.println("Pridany zamestnanec: "+bs); }
 		}
 	}
 	
@@ -55,11 +64,21 @@ public class Menu {
 	    UrovenSpoluprace urovenSpoluprace = null;
 
 	    
-	    System.out.println("Zadajte ID zamestnanca:");
-	    int id1 = nacitajCislo();
+	    int id1;
+	    while (true) {
+	        System.out.print("Zadajte ID zamestnanca: ");
+	        id1 = nacitajCislo();
+	        if (id1 > 0) break;
+	        System.out.println("ID musi byt kladne cislo.");
+	    }
 
-	    System.out.println("Zadajte ID kolegu:");
-	    int id2 = nacitajCislo();
+	    int id2;
+	    while (true) {
+	        System.out.print("Zadajte ID kolegu: ");
+	        id2 = nacitajCislo();
+	        if (id2 > 0) break;
+	        System.out.println("ID musi byt kladne cislo.");
+	    }
 
 	    if (db.najdiZamestnancaPodlaId(id1) == null || db.najdiZamestnancaPodlaId(id2) == null) {
 	        System.out.println("Zamestnanec s danym ID neexistuje.");
@@ -92,7 +111,7 @@ public class Menu {
 	    db.pridajSpolupracu(id1, id2, urovenSpoluprace);
 	    Zamestnanec z1 = db.najdiZamestnancaPodlaId(id1);
 	    Zamestnanec z2 = db.najdiZamestnancaPodlaId(id2);
-	    System.out.println("Spolupraca uzavreta: " + z1 + " <-> " + z2 + " (" + urovenSpoluprace + ")");
+	    System.out.println(" " + z1 + " <-> " + z2 + " (" + urovenSpoluprace + ")");
 	}
 	
 	public void odstranitZamestnanca() {
@@ -137,7 +156,9 @@ public class Menu {
 	
 	public void pouzitZrucnostZamestnanca() {
 		Zamestnanec z = nacitajZamestnanca("Zadajte ID zamestnanca: ");
-	    z.pouzitZrucnost();
+		if (z != null) {
+	        z.pouzitZrucnost();
+	    }
 	}
 	
 	public void vypisPodlaSkupinAPriezviska() {
@@ -178,7 +199,7 @@ public class Menu {
 	private String nacitajString() {
 		while (true) {
 			String vstup = sc.next();
-			if(vstup.matches("[a-zA-zÀ-ž]+")) {
+			if(vstup.matches("[A-Za-zÀ-ž]+")) {
 				return vstup;
 			}
 			System.out.println("Zadajte len pismena.");

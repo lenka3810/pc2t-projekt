@@ -46,8 +46,17 @@ public class Databaza {
         Zamestnanec z2 = najdiZamestnancaPodlaId(id2);
         
         if (z1 != null && z2 != null && z1 != z2) {
+
+            boolean existuje = z1.getSpoluprace().containsKey(z2);
+
             z1.pridajSpolupracu(z2, urovenSpoluprace);
             z2.pridajSpolupracu(z1, urovenSpoluprace);
+
+            if (existuje) {
+                System.out.print("Spolupraca bola aktualizovana: ");
+            } else {
+                System.out.print("Spolupraca bola vytvorena: ");
+            }
         }
     }
 
@@ -139,6 +148,8 @@ public class Databaza {
 		}
 	}
 	public void nacitanieZoSuboru(String nazovSuboru) {
+		zamestnanci.clear();
+		
 	    try (Scanner fileSc = new Scanner(new File(nazovSuboru))) {
 	    	while (fileSc.hasNextLine()) {
 	    		String riadok = fileSc.nextLine().trim();
@@ -261,6 +272,14 @@ public class Databaza {
 	            
 	            zamestnanci.add(z);
 	        }
+	        
+	        int maxId = 0;
+	        for (Zamestnanec z : zamestnanci) {
+	            if (z.getId() > maxId) {
+	                maxId = z.getId();
+	            }
+	        }
+	        Zamestnanec.nastavDalsieId(maxId + 1);
 
 	        rs = st.executeQuery("SELECT * FROM spolupraca");
 
@@ -271,19 +290,21 @@ public class Databaza {
 
 	            pridajSpolupracu(id1, id2, u);
 	        }
-	        
-	        int maxId = 0;
-	        for (Zamestnanec z : zamestnanci) {
-	            if (z.getId() > maxId) {
-	                maxId = z.getId();
-	            }
-	        }
-	        Zamestnanec.nastavDalsieId(maxId + 1);
 
 	        System.out.println("Načítané zo SQL databázy.");
 
 	    } catch (SQLException e) {
 	        System.out.println("Chyba pri načítaní: " + e.getMessage());
+	    }
+	}
+	
+	public void zavriSpojenie() {
+	    try {
+	        if (conn != null) {
+	            conn.close();
+	        }
+	    } catch (SQLException e) {
+	        System.out.println("Chyba pri zatvarani DB: " + e.getMessage());
 	    }
 	}
 	

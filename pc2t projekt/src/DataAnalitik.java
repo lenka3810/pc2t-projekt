@@ -33,7 +33,7 @@ public class DataAnalitik extends Zamestnanec
 					maxSpolocnych = spolocnych;
 				}
 			}
-			System.out.println(this+" ma najviac spolocnych spoloupracovnikov s: "
+			System.out.println(this+" ma najviac spolocnych spolupracovnikov s: "
 							+najlepsi+"("+maxSpolocnych+")");
 	}
 }
