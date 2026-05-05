@@ -37,6 +37,14 @@ public abstract class Zamestnanec
     public int getRokNarodenia() {
         return rokNarodenia;
     }
+    
+    public void setId(int id) {
+        this.id = id;
+    }
+    
+    public static void nastavDalsieId(int id) {
+        nasledujuceId = id;
+    }
 
     public HashMap<Zamestnanec, UrovenSpoluprace> getSpoluprace() {
         return spoluprace;

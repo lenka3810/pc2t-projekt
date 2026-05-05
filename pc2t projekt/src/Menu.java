@@ -152,8 +152,13 @@ public class Menu {
 		db.vypisPoctyVSkupinach();
 		}
 	
-	public void ulozenieDoSQL() {}
-	public void nacitanieZSQL() {}	
+	public void ulozenieDoSQL() {
+	    db.ulozenieDoSQL();
+	}
+
+	public void nacitanieZSQL() {
+	    db.nacitanieZoSQL();
+	}	
 	
 	public void volba()
 	{

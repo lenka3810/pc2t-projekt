@@ -1,13 +1,22 @@
 import java.io.*;
 import java.util.*;
+import java.sql.*;
 
 public class Databaza {
     private ArrayList<Zamestnanec> zamestnanci;
+    private Connection conn;
 
     public Databaza() {
         this.zamestnanci = new ArrayList<>();
+        
+        try {
+            conn = DriverManager.getConnection("jdbc:sqlite:databaza.db");
+            vytvorTabulky();
+        } catch (SQLException e) {
+            System.out.println("Chyba pripojenia k DB: " + e.getMessage());
+        }
     }
-
+    
     public void pridajZamestnanca(Zamestnanec zamestnanec) {
         zamestnanci.add(zamestnanec);
     }
@@ -163,6 +172,122 @@ public class Databaza {
 			System.out.println("Chyba pri nacitani: "+e.getMessage());
 		}
 	}
+	
+	private void vytvorTabulky() throws SQLException {
+        Statement st = conn.createStatement();
+
+        st.executeUpdate(
+            "CREATE TABLE IF NOT EXISTS zamestnanec (" +
+            "id INTEGER PRIMARY KEY, " +
+            "meno TEXT, " +
+            "priezvisko TEXT, " +
+            "rok INTEGER, " +
+            "typ TEXT)"
+        );
+
+        st.executeUpdate(
+            "CREATE TABLE IF NOT EXISTS spolupraca (" +
+            "id1 INTEGER, " +
+            "id2 INTEGER, " +
+            "uroven TEXT)"
+        );
+    }
+	
+	public void ulozenieDoSQL() {
+	    try {
+	        Statement st = conn.createStatement();
+
+	        st.executeUpdate("DELETE FROM zamestnanec");
+	        st.executeUpdate("DELETE FROM spolupraca");
+
+	        PreparedStatement ps = conn.prepareStatement(
+	            "INSERT INTO zamestnanec VALUES (?, ?, ?, ?, ?)"
+	        );
+
+	        for (Zamestnanec z : zamestnanci) {
+	            ps.setInt(1, z.getId());
+	            ps.setString(2, z.getMeno());
+	            ps.setString(3, z.getPriezvisko());
+	            ps.setInt(4, z.getRokNarodenia());
+	            ps.setString(5, z.getTypSkupiny().toString());
+	            ps.executeUpdate();
+	        }
+
+	        PreparedStatement ps2 = conn.prepareStatement(
+	            "INSERT INTO spolupraca VALUES (?, ?, ?)"
+	        );
+
+	        for (Zamestnanec z : zamestnanci) {
+	            for (Map.Entry<Zamestnanec, UrovenSpoluprace> e : z.getSpoluprace().entrySet()) {
+	                if (z.getId() < e.getKey().getId()) {
+	                    ps2.setInt(1, z.getId());
+	                    ps2.setInt(2, e.getKey().getId());
+	                    ps2.setString(3, e.getValue().toString());
+	                    ps2.executeUpdate();
+	                }
+	            }
+	        }
+
+	        System.out.println("Uložené do SQL databázy.");
+
+	    } catch (SQLException e) {
+	        System.out.println("Chyba pri ukladaní: " + e.getMessage());
+	    }
+	}
+	
+	public void nacitanieZoSQL() {
+	    try {
+	        zamestnanci.clear();
+
+	        Statement st = conn.createStatement();
+	        ResultSet rs = st.executeQuery("SELECT * FROM zamestnanec");
+
+	        while (rs.next()) {
+	        	int id = rs.getInt("id");
+	        	
+	            String typ = rs.getString("typ");
+	            String meno = rs.getString("meno");
+	            String priezvisko = rs.getString("priezvisko");
+	            int rok = rs.getInt("rok");
+
+	            Zamestnanec z;
+	            if (typ.equals("ANALYTIK")) {
+	                z = new DataAnalitik(meno, priezvisko, rok);
+	            } else {
+	                z = new BezpecnostnySpecialista(meno, priezvisko, rok);
+	            }
+
+	            z.setId(id);
+	            
+	            zamestnanci.add(z);
+	        }
+
+	        rs = st.executeQuery("SELECT * FROM spolupraca");
+
+	        while (rs.next()) {
+	            int id1 = rs.getInt("id1");
+	            int id2 = rs.getInt("id2");
+	            UrovenSpoluprace u = UrovenSpoluprace.valueOf(rs.getString("uroven").toUpperCase());
+
+	            pridajSpolupracu(id1, id2, u);
+	        }
+	        
+	        int maxId = 0;
+	        for (Zamestnanec z : zamestnanci) {
+	            if (z.getId() > maxId) {
+	                maxId = z.getId();
+	            }
+	        }
+	        Zamestnanec.nastavDalsieId(maxId + 1);
+
+	        System.out.println("Načítané zo SQL databázy.");
+
+	    } catch (SQLException e) {
+	        System.out.println("Chyba pri načítaní: " + e.getMessage());
+	    }
+	}
+	
+	
 }
 
 
